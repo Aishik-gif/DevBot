@@ -1,2 +1,2 @@
 
-export const BASE_API_URL = `http://dev-bot-ai.vercel.app/api`
+export const BASE_API_URL = `https://dev-bot-ai.vercel.app/api`

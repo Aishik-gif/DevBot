@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CodeEditor } from "@/components/CodeEditor";
 import { Preview } from "@/components/Preview";
@@ -12,6 +12,7 @@ import { SidebarSteps } from "@/components/SideBarSteps";
 import axios from "axios";
 import { BASE_API_URL } from "@/config";
 import { useWebContainer } from "@/hooks/useWebContainer";
+import { WebContainerContext } from "@/providers";
 
 export default function EditorPage() {
   const prompt = useSearchParams().get("prompt");
@@ -25,7 +26,7 @@ export default function EditorPage() {
   const [loading, setLoading] = useState(false);
   const [command, setCommand] = useState<string | undefined>("");
 
-  const webcontainer = useWebContainer();
+  const webcontainer = useContext(WebContainerContext);
 
   const [activeTab, setActiveTab] = useState<"code" | "preview">("code");
 

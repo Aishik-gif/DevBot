@@ -153,7 +153,7 @@ export default function EditorPage() {
     }
     setLoading(true);
     const templateResponse = await axios.post(
-      `/template`,
+      `/api/template`,
       { prompt: prompt.trim() },
       {
         headers: {
@@ -173,7 +173,7 @@ export default function EditorPage() {
     );
 
     const stepsResponse = await axios.post(
-      `/chat`,
+      `/api/chat`,
       { prompts: prompts },
       {
         headers: {

@@ -155,7 +155,7 @@ export default function EditorPage() {
     }
     setLoading(true);
     const templateResponse = await axios.post(
-      `${BASE_API_URL}/template`,
+      `/template`,
       { prompt: prompt.trim() },
       {
         headers: {
@@ -175,7 +175,7 @@ export default function EditorPage() {
     );
 
     const stepsResponse = await axios.post(
-      `${BASE_API_URL}/chat`,
+      `/chat`,
       { prompts: prompts },
       {
         headers: {

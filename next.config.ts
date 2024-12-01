@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/api",
+        source: "/api(.*)",
         headers: [
           {
             key: "Access-Control-Allow-Origin",

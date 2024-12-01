@@ -10,8 +10,6 @@ import { FileExplorer } from "@/components/FileExplorer";
 import { parsePrompt, parseXml } from "@/lib/utils";
 import { SidebarSteps } from "@/components/SideBarSteps";
 import axios from "axios";
-import { BASE_API_URL } from "@/config";
-import { useWebContainer } from "@/hooks/useWebContainer";
 import { WebContainerContext } from "@/providers";
 
 export default function EditorPage() {

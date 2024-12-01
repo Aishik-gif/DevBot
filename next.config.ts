@@ -34,14 +34,22 @@ const nextConfig: NextConfig = {
             key: "Access-Control-Allow-Headers",
             value: "Content-Type",
           },
+          {
+            key: "Cross-Origin-Embedder-Policy",
+            value: "unsafe-none",
+          },
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "unsafe-none",
+          },
         ],
       },
     ];
   },
 };
-
 if (process.env.NODE_ENV === "development") {
   await setupDevPlatform();
 }
+
 
 export default nextConfig;

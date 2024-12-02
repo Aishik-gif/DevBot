@@ -92,10 +92,10 @@ export function SidebarSteps({
                 {steps.map((step, index) => {
                   const Icon = getIcon(step.type);
                   return (
-                    <SidebarMenuItem key={index}>
+                    <SidebarMenuItem className="w-full py-1" key={index}>
                       <SidebarMenuButton
                         className={cn(
-                          "flex items-center gap-3 w-full",
+                          "flex items-center gap-3 w-full break-all py-1 text-ellipsis",
                           step.status === "completed" && "text-green-500"
                         )}
                       >
@@ -104,7 +104,7 @@ export function SidebarSteps({
                         ) : (
                           <Icon size={18} />
                         )}
-                        <span>{step.title}</span>
+                        {step.title}
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );

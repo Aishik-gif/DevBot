@@ -3,7 +3,7 @@ import Loader from "@/components/Loader";
 
 export default function App() {
   return (
-    <div className="h-screen w-screen place-content-center">
+    <div className="flex w-full h-full items-center justify-center">
       <Loader />
     </div>
   );

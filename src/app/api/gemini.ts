@@ -7,7 +7,7 @@ export const model = genAI.getGenerativeModel({
   generationConfig: {
     candidateCount: 1,
     maxOutputTokens: 8192,
-    temperature: 0.2,
+    temperature: 0.7,
   },
   systemInstruction: getSystemPrompt(),
 });

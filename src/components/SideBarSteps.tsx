@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { Check, FileCode, Layout, Package, Settings } from 'lucide-react'
-import { cn } from "@/lib/utils"
+import { Check, FileCode, Layout, Package, Settings } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   Sidebar,
   SidebarContent,
@@ -11,8 +11,13 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "@/components/ui/sidebar"
-import { Step, StepType } from "@/types" 
+  SidebarFooter,
+} from "@/components/ui/sidebar";
+import { Step, StepType } from "@/types";
+import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
+import { ScrollArea } from "./ui/scroll-area";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 
 // const steps: Step[] = [
 //   {
@@ -45,52 +50,96 @@ import { Step, StepType } from "@/types"
 //   },
 // ]
 
-export function SidebarSteps({steps}: {steps: Step[]}) {
+export function SidebarSteps({
+  steps,
+  className,
+  setPrompt,
+  handleClick,
+}: {
+  steps: Step[];
+  className?: string;
+  setPrompt: Dispatch<SetStateAction<string | null>>;
+  handleClick: () => Promise<void>;
+}) {
   const getIcon = (type: StepType) => {
     switch (type) {
       case StepType.ProjectName:
-        return FileCode
+        return FileCode;
       case StepType.CreateFile:
-        return Layout
+        return Layout;
       case StepType.CreateFolder:
-        return Package
+        return Package;
       case StepType.RunScript:
-        return Settings
+        return Settings;
       default:
-        return FileCode
+        return FileCode;
     }
-  }
+  };
+
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [disabled, setDisabled] = useState(false);
 
   return (
-    <Sidebar variant='inset' 
-      className='min-h-0 h-[calc(100%-4rem)] mt-[4rem]'
-    >
+    <Sidebar variant="inset" className={cn(className)}>
       <SidebarHeader>
         <h2 className="text-lg font-semibold px-4 py-2">Build Steps</h2>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {steps.map((step, index) => {
-                const Icon = getIcon(step.type)
-                return (
-                  <SidebarMenuItem key={index}>
-                    <SidebarMenuButton className={cn(
-                      "flex items-center gap-3 w-full",
-                      step.status === 'completed' && "text-green-500"
-                    )}>
-                      {step.status === 'completed' ? <Check size={18} /> : <Icon size={18} />}
-                      <span>{step.title}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <ScrollArea>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {steps.map((step, index) => {
+                  const Icon = getIcon(step.type);
+                  return (
+                    <SidebarMenuItem key={index}>
+                      <SidebarMenuButton
+                        className={cn(
+                          "flex items-center gap-3 w-full",
+                          step.status === "completed" && "text-green-500"
+                        )}
+                      >
+                        {step.status === "completed" ? (
+                          <Check size={18} />
+                        ) : (
+                          <Icon size={18} />
+                        )}
+                        <span>{step.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </ScrollArea>
       </SidebarContent>
+      <SidebarFooter>
+        <div className="flex flex-col gap-2">
+          <Textarea
+            ref={inputRef}
+            placeholder="Chat with DevBot..."
+            className="resize-none"
+            onChange={(e) => {
+              setPrompt(e.target.value);
+            }}
+          />
+          <Button
+            disabled={disabled}
+            type="submit"
+            onClick={async () => {
+              setDisabled(true);
+              await handleClick();
+              if (inputRef.current) {
+                inputRef.current.value = "";
+              }
+              setDisabled(false);
+            }}
+          >
+            {disabled ? "Generating..." : "Submit"}
+          </Button>
+        </div>
+      </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
-

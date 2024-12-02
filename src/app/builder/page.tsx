@@ -11,6 +11,7 @@ import { parsePrompt, parseXml } from "@/lib/utils";
 import { SidebarSteps } from "@/components/SideBarSteps";
 import axios from "axios";
 import { WebContainerContext } from "@/providers";
+import Loader from "@/components/Loader";
 
 export default function EditorPage() {
   const prompt = useSearchParams().get("prompt");
@@ -19,6 +20,7 @@ export default function EditorPage() {
   const [templateSet, setTemplateSet] = useState(false);
   const [files, setFiles] = useState<FileItem[]>([]);
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
+  const [userPrompt, setUserPrompt] = useState<string | null>(null);
   const [llmMessages, setLlmMessages] = useState<Chat[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -174,14 +176,13 @@ export default function EditorPage() {
 
     const stepsResponse = await axios.post(
       `/api/chat`,
-      { prompts: prompts },
+      { role: "user", prompts: prompts },
       {
         headers: {
           "Content-Type": "application/json",
         },
       }
     );
-    setLoading(false);
 
     setSteps((s) => [
       ...s,
@@ -195,22 +196,50 @@ export default function EditorPage() {
       ...x,
       ...[...prompts, prompt].map((content) => ({
         role: "user" as const,
-        parts: [
-          {
-            text: content,
-          },
-        ],
+        prompts: content,
       })),
       {
         role: "model" as const,
-        parts: [
-          {
-            text: stepsResponse.data.response,
-          },
-        ],
+        prompts: stepsResponse.data.response,
       },
     ]);
+    setLoading(false);
   }
+
+  const handleClick = async () => {
+    setLoading(true);
+    if (userPrompt) {
+      const newMessage: Chat = {
+        role: "user" as const,
+        prompts: userPrompt,
+      };
+
+      const stepsResponse = await axios.post(
+        `/api/chat`,
+        { history: [...llmMessages], chat: newMessage },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const modelResponse: Chat = {
+        role: "model" as const,
+        prompts: stepsResponse.data.response,
+      };
+      setLlmMessages((x) => [...x, newMessage, modelResponse]);
+
+      setSteps((s) => [
+        ...s,
+        ...parseXml(stepsResponse.data.response).map((x: Step) => ({
+          ...x,
+          status: "pending" as const,
+        })),
+      ]);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     init();
@@ -218,9 +247,14 @@ export default function EditorPage() {
 
   return (
     <>
-      <SidebarSteps steps={steps} />
+      <SidebarSteps
+        steps={steps}
+        className="min-h-0 h-[calc(100%-4rem)] mt-[4rem]"
+        setPrompt={setUserPrompt}
+        handleClick={handleClick}
+      />
       <div className="flex max-w-full w-full h-full">
-        <div className="realtive flex flex-col w-full h-full">
+        <div className="flex flex-col w-full h-full">
           <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as "code" | "preview")}
@@ -231,12 +265,16 @@ export default function EditorPage() {
               <TabsTrigger value="preview">Preview</TabsTrigger>
             </TabsList>
           </Tabs>
-          {activeTab === "code" ? (
+          {loading ? (
+            <div className="flex w-full h-full items-center justify-center">
+              <Loader />
+            </div>
+          ) : activeTab === "code" ? (
             <div className="flex max-w-full p-3 pt-1 gap-2 flex-1 h-[91%]">
               <div className="h-full w-72">
                 <FileExplorer files={files} onFileSelect={setSelectedFile} />
               </div>
-              <div className="flex justify-center items-center w-[calc(100svw-50svw)] mx-auto rounded-lg overflow-hidden">
+              <div className="flex justify-center items-center w-[calc(100svw-50svw)] mx-auto  overflow-hidden">
                 <CodeEditor file={selectedFile} />
               </div>
             </div>
@@ -245,10 +283,8 @@ export default function EditorPage() {
               {command && webcontainer ? (
                 <Preview command={command} webContainer={webcontainer} />
               ) : (
-                <div className="h-full flex items-center justify-center text-gray-400 p-5">
-                  <div className="text-center">
-                    <p className="mb-2">Loading...</p>
-                  </div>
+                <div className="h-full w-full flex items-center justify-center text-gray-400 p-5">
+                  <Loader />
                 </div>
               )}
             </>

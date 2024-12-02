@@ -13,7 +13,7 @@ export interface Parts {
 
 export interface Chat {
   role: "user" | "model";
-  parts: Parts[]
+  prompts: string;
 }
 
 export interface Step {

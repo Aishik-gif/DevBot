@@ -1,11 +1,7 @@
 import React, { useState } from "react";
-import {
-  File,
-  Files,
-  FolderClosed,
-  FolderOpen,
-} from "lucide-react";
+import { File, Files, FolderClosed, FolderOpen } from "lucide-react";
 import { FileItem } from "../types";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 interface FileExplorerProps {
   files: FileItem[];
@@ -32,7 +28,7 @@ function FileNode({ item, depth, onFileClick }: FileNodeProps) {
     <div className="select-none">
       <div
         className="flex items-center gap-2 py-[0.2rem] hover:bg-zinc-700 rounded-md cursor-pointer"
-        style={{ paddingLeft: `${(depth * 0.8) + 0.45}rem` }}
+        style={{ paddingLeft: `${depth * 0.8 + 0.45}rem` }}
         onClick={handleClick}
       >
         {item.type === "folder" ? (
@@ -66,7 +62,7 @@ function FileNode({ item, depth, onFileClick }: FileNodeProps) {
 
 export function FileExplorer({ files, onFileSelect }: FileExplorerProps) {
   return (
-    <div className="bg-zinc-800 rounded-lg shadow-lg p-4 h-full overflow-auto">
+    <ScrollArea className="bg-zinc-800 rounded shadow-lg p-4 h-full">
       <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 pl-1 text-gray-100">
         <Files className="w-5 h-5" />
         File Explorer
@@ -81,6 +77,6 @@ export function FileExplorer({ files, onFileSelect }: FileExplorerProps) {
           />
         ))}
       </div>
-    </div>
+    </ScrollArea>
   );
 }
